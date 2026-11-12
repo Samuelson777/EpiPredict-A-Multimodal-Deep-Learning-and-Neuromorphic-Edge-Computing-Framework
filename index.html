@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EpiPredict: Neurological Predictive Analytics Platform | Samuelson G</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#141E33',
+                            950: '#0B1120',
+                        },
+                        brand: {
+                            50: '#EEF2FF',
+                            100: '#E0E7FF',
+                            500: '#6366F1',
+                            600: '#4F46E5',
+                            700: '#4338CA',
+                            900: '#312E81',
+                        },
+                        teal: {
+                            500: '#14B8A6',
+                            600: '#0D9488',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom chart container sizing for responsiveness and overflow prevention */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 380px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F5F9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+        .tab-btn.active {
+            border-bottom-color: #4F46E5;
+            color: #4F46E5;
+            font-weight: 600;
+        }
+    </style>
+
+    <!-- Required Placeholder Comments -->
+    <!-- Chosen Palette: Warm Editorial Clinical (Slate-50 background #F8FAFC, Slate-900 text, Indigo-600 primary, Teal-600 secondary, Rose-500 alert, Emerald-600 success) -->
+    <!-- Application Structure Plan: Designed as a single-page interactive research console structured into seven thematic sections: (1) Hero & Executive Summary with KPI metric tiles, (2) Multimodal Wearable Sensing & 70/20/10 Telemetry Variance Explorer, (3) Chronobiology & Multiday Phase-Locking Inspector, (4) Deep Learning & Spiking Neuromorphic Mathematics Simulator, (5) TinyML & Edge Hardware Execution Benchmarks (GAP9, DYNAP-SE2, ARM), (6) Clinical SPH/SOP Optimization & Benchmark Comparison Table, and (7) Translational Roadmap, Governance, Declarations & Searchable References. This non-linear, task-oriented layout allows clinical researchers, neuroengineers, and hardware architects to dynamically explore complex mathematical equations, interactive trade-offs, and empirical benchmarks without losing context. -->
+    <!-- Visualization & Content Choices: 
+       - Multimodal Variance Distribution -> Goal: Inform/Compare -> Interactive Donut & Stacked Bar Chart (Chart.js Canvas) -> Justification: Clearly displays the surprising 70% contextual big data dominance vs 20% autonomic and 10% cranial EEG variance in multi-hour prediction.
+       - Chronobiological Phase Locking & Signal Tier Hierarchy -> Goal: Organize/Compare -> Dynamic Range Selector + HTML Grid Matrix -> Justification: Allows users to inspect circular R-values and compare physiological signal utility tiers.
+       - Hardware Benchmark Comparison (Latency, Energy, Power) -> Goal: Compare/Optimize -> Interactive Grouped Bar & Line Chart (Chart.js Canvas) -> Justification: Demonstrates the 2400x neuromorphic energy gain of DYNAP-SE2 and 2.84 ms RISC-V GAP9 execution.
+       - SPH vs SOP Clinical Trade-off Simulator -> Goal: Simulate/Inform -> Interactive Slider & Dynamic Curve Generator (Chart.js Canvas) -> Justification: Visually pinpoints the mathematically optimal SPH (7 min) and SOP (27 min) operating point.
+       - Benchmark Dataset Comparison Matrix -> Goal: Compare/Organize -> Dynamic HTML Data Table with Search and Tab Filtering -> Justification: Facilitates rapid cross-referencing across CHB-MIT, EPILEPSIAE, Siena, TUSZ, and Wearable cohorts.
+       - NO SVG graphics used. NO Mermaid JS used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-indigo-100 selection:text-indigo-900 min-h-screen flex flex-col">
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <span class="w-9 h-9 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-xl shadow-md">E</span>
+                    <div>
+                        <h1 class="font-bold text-slate-900 leading-tight">EpiPredict <span class="text-xs font-semibold px-2 py-0.5 rounded bg-indigo-100 text-indigo-700 ml-1">Research Console</span></h1>
+                        <p class="text-xs text-slate-500 font-mono">Author: SAMUELSON G | Neuroengineering & AI</p>
+                    </div>
+                </div>
+                <!-- Quick Navigation Links -->
+                <nav class="hidden md:flex space-x-1 lg:space-x-4 text-xs font-medium text-slate-600">
+                    <button onclick="scrollToSection('summary')" class="hover:text-indigo-600 px-2 py-1 transition">Summary</button>
+                    <button onclick="scrollToSection('multimodal')" class="hover:text-indigo-600 px-2 py-1 transition">Sensors & Variance</button>
+                    <button onclick="scrollToSection('chronobiology')" class="hover:text-indigo-600 px-2 py-1 transition">Chronobiology</button>
+                    <button onclick="scrollToSection('neuromorphic')" class="hover:text-indigo-600 px-2 py-1 transition">SNN Engine</button>
+                    <button onclick="scrollToSection('hardware')" class="hover:text-indigo-600 px-2 py-1 transition">Edge TinyML</button>
+                    <button onclick="scrollToSection('clinical')" class="hover:text-indigo-600 px-2 py-1 transition">Clinical Benchmarks</button>
+                    <button onclick="scrollToSection('declarations')" class="hover:text-indigo-600 px-2 py-1 transition">Governance & Refs</button>
+                </nav>
+                <div class="flex items-center space-x-2">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span> Peer-Reviewed Specification
+                    </span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+        <!-- SECTION 1: HERO & EXECUTIVE SUMMARY -->
+        <section id="summary" class="scroll-mt-20">
+            <!-- Section Intro Paragraph -->
+            <div class="mb-6 p-4 rounded-xl bg-indigo-50/80 border border-indigo-100 text-slate-700 text-sm leading-relaxed">
+                <strong class="text-indigo-900 font-semibold">Section Overview:</strong> This opening section introduces the core clinical challenge of refractory epilepsy and summarizes the foundational specifications of the <strong>EpiPredict</strong> platform conceptualized by <strong>Samuelson G</strong>. Users can review key epidemiological metrics, explore the foundational system architecture mapping, and inspect the high-level quantitative breakthroughs achieved across multimodal sensing and neuromorphic edge processing.
+            </div>
+
+            <!-- Hero Banner & Title Block -->
+            <div class="bg-gradient-to-br from-slate-900 via-slate-850 to-indigo-950 text-white rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+                <div class="absolute -right-12 -top-12 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="relative z-10 max-w-4xl">
+                    <div class="flex flex-wrap items-center gap-2 mb-3">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/30 text-indigo-200 border border-indigo-400/30">Neuroengineering</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-teal-500/30 text-teal-200 border border-teal-400/30">Predictive Neuroscience</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/30 text-purple-200 border border-purple-400/30">Biomedical Big Data</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight mb-4">
+                        EpiPredict: A Multimodal Deep Learning and Neuromorphic Edge-Computing Framework for Prospective Epileptic Seizure Prediction
+                    </h2>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-6">
+                        An end-to-end neurological predictive analytics platform by <strong>SAMUELSON G</strong> synthesizing channel-aware sparse scalp EEG/fNIRS, peripheral autonomic wrist sensing, multi-day chronobiological big data, hybrid 2D-CNN + Transformers, and sub-milliwatt neuromorphic Spiking Neural Networks (SPCLU) deployed on multi-core RISC-V edge processors.
+                    </p>
+                    <div class="flex flex-wrap items-center gap-4 text-xs font-mono text-slate-400 border-t border-slate-800 pt-4">
+                        <div><strong>Author:</strong> SAMUELSON G</div>
+                        <div>•</div>
+                        <div><strong>Affiliation:</strong> Neuroengineering & Predictive Neuroscience Research</div>
+                        <div>•</div>
+                        <div><strong>Target Accuracy:</strong> &ge; 70% Ambulatory Seizure Prediction</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI Metric Cards Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-6">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Global Impact</div>
+                    <div class="text-2xl font-extrabold text-slate-900">65M</div>
+                    <div class="text-xs text-slate-600 mt-1">People with epilepsy worldwide; 30-40% drug-resistant</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Trauma Reduction</div>
+                    <div class="text-2xl font-extrabold text-emerald-600">&ge; 50%</div>
+                    <div class="text-xs text-slate-600 mt-1">Target reduction in unexpected epileptic events</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Peak Sensitivity</div>
+                    <div class="text-2xl font-extrabold text-indigo-600">99.31%</div>
+                    <div class="text-xs text-slate-600 mt-1">Achieved in spatio-temporal deep learning benchmark</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Neuromorphic Gain</div>
+                    <div class="text-2xl font-extrabold text-teal-600">2,400&times;</div>
+                    <div class="text-xs text-slate-600 mt-1">SNN energy reduction vs standard ConvLSTM</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Edge Latency</div>
+                    <div class="text-2xl font-extrabold text-purple-600">2.84 ms</div>
+                    <div class="text-xs text-slate-600 mt-1">GAP9 RISC-V inference (0.051 mJ/window)</div>
+                </div>
+            </div>
+
+            <!-- Table 1: Structural Mapping -->
+            <div class="mt-8 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-base">Table 1: Structural Mapping of Foundational EpiPredict Specifications</h3>
+                        <p class="text-xs text-slate-500">Mapping clinical problem requirements to integrated multimodal & neuromorphic implementations</p>
+                    </div>
+                    <span class="text-xs font-mono bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md font-semibold">System Mapping Matrix</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                                <th class="p-3.5">System Dimension</th>
+                                <th class="p-3.5">Baseline Clinical Specification</th>
+                                <th class="p-3.5">Advanced Architecture Implementation</th>
+                                <th class="p-3.5">Target Clinical & Operational Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 text-slate-600">
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="p-3.5 font-bold text-slate-900">Core Clinical Objective</td>
+                                <td class="p-3.5">Overcome unpredictable ictal onset in 30-40% drug-resistant population</td>
+                                <td class="p-3.5">Multi-horizon preictal state identification (3-30 min acute SPH/SOP; up to 4 hr forecasting)</td>
+                                <td class="p-3.5 text-emerald-700 font-semibold">&ge; 70% ambulatory prediction accuracy; &ge; 50% event reduction</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="p-3.5 font-bold text-slate-900">Sensing & Big Data Layer</td>
+                                <td class="p-3.5">Wearable EEG monitoring & neurological signal archives</td>
+                                <td class="p-3.5">Channel-aware sparse EEG (2.8 channels) + fNIRS + wrist sensors (PPG, EDA, ECG, TEMP, ACC)</td>
+                                <td class="p-3.5 font-medium">84.4% channel pruning; 70% long-horizon variance captured via context</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="p-3.5 font-bold text-slate-900">Software & Algorithmic Stack</td>
+                                <td class="p-3.5">Python, R, C++; TensorFlow, PyTorch, Keras</td>
+                                <td class="p-3.5">Hybrid 2D-CNN + Bi-LSTM / Set Transformer; Surrogate-Gradient Spiking ConvLSTM (SPCLU)</td>
+                                <td class="p-3.5 text-indigo-700 font-semibold">91.5% to 99.31% sensitivity; 0.01-0.145 FPR/h; 15-20% false-alarm reduction</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="p-3.5 font-bold text-slate-900">Edge & Neuromorphic Hardware</td>
+                                <td class="p-3.5">Edge computing devices, neuromorphic sensors, low-latency units</td>
+                                <td class="p-3.5">Mixed-signal ADM (DYNAP-SE2) & multi-core RISC-V (GAP9) / ARM TinyML processors</td>
+                                <td class="p-3.5 font-medium">80.7%-98.58% compute reduction; 2,400&times; SNN energy gain; 2.84 ms latency</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="p-3.5 font-bold text-slate-900">Personalization & Adaptation</td>
+                                <td class="p-3.5">Adaptive machine learning models for brain pattern variations</td>
+                                <td class="p-3.5">AURA on-device continuous learning (detector pseudo-labels train plastic SNN on-chip)</td>
+                                <td class="p-3.5 font-medium">Single-seizure calibration; zero cloud dependency; full patient data privacy</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: MULTIMODAL WEARABLE SENSORS & VARIANCE DISCOVERY -->
+        <section id="multimodal" class="scroll-mt-20">
+            <!-- Section Intro Paragraph -->
+            <div class="mb-6 p-4 rounded-xl bg-indigo-50/80 border border-indigo-100 text-slate-700 text-sm leading-relaxed">
+                <strong class="text-indigo-900 font-semibold">Section Overview:</strong> This section details the multi-sensor physical architecture and presents the crucial analytical discovery regarding predictive variance distribution. Users can interactively explore how cranial scalp EEG/fNIRS combine with peripheral wrist sensors (PPG, EDA, ECG, ACC, TEMP) and contextual big data telemetry. The chart below illustrates the explainable AI (SHAP) finding that contextual and autonomic telemetry drive 90% of multi-hour forecasting variance.
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <!-- Left Column: Contextual & Sensor Description -->
+                <div class="lg:col-span-6 space-y-6">
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-lg font-bold text-slate-900 mb-2">Multimodal Sensor Suite & Cranial Pruning</h3>
+                        <p class="text-slate-600 text-xs sm:text-sm leading-relaxed mb-4">
+                            Standard clinical monitoring requires 18 to 22 wet scalp EEG electrodes, which are socially stigmatizing and uncomfortable. EpiPredict introduces a two-stage channel-aware <strong>Set Transformer</strong> that prunes the cranial montage down to a mean of <strong>2.8 channels</strong> per patient while maintaining 80.1% sensitivity and 0.11 FPR/h. To compensate for scalp EEG motion vulnerability, discrete <strong>fNIRS optodes</strong> measure local preictal surges in oxyhemoglobin (HbO_2) and deoxyhemoglobin (HbR).
+                        </p>
+                        
+                        <!-- Interactive Modality Selector Buttons -->
+                        <div class="space-y-2">
+                            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Inspect Sensor Modality Details:</label>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                <button onclick="selectSensor('eeg')" id="btn-eeg" class="sensor-btn p-2 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 text-xs font-semibold text-center hover:bg-indigo-100 transition">Scalp EEG (2.8 Ch)</button>
+                                <button onclick="selectSensor('fnirs')" id="btn-fnirs" class="sensor-btn p-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 text-xs font-semibold text-center hover:bg-indigo-50 transition">fNIRS Optodes</button>
+                                <button onclick="selectSensor('ecg')" id="btn-ecg" class="sensor-btn p-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 text-xs font-semibold text-center hover:bg-indigo-50 transition">ECG / PPG (HRV)</button>
+                                <button onclick="selectSensor('eda')" id="btn-eda" class="sensor-btn p-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 text-xs font-semibold text-center hover:bg-indigo-50 transition">EDA (Tonic/Phasic)</button>
+                                <button onclick="selectSensor('acc')" id="btn-acc" class="sensor-btn p-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 text-xs font-semibold text-center hover:bg-indigo-50 transition">ACC / GY Motion</button>
+                                <button onclick="selectSensor('context')" id="btn-context" class="sensor-btn p-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 text-xs font-semibold text-center hover:bg-indigo-50 transition">Context Telemetry</button>
+                            </div>
+                        </div>
+
+                        <!-- Modality Inspector Card -->
+                        <div id="sensor-detail-card" class="mt-4 p-4 rounded-lg bg-slate-50 border border-slate-200 text-xs space-y-2">
+                            <div class="font-bold text-slate-900 text-sm" id="sensor-title">Sparse Scalp EEG (2.8 Channels)</div>
+                            <div class="text-slate-600" id="sensor-desc">Captures cortical electrical activity at 256 Hz. Pruned using Set Transformer from 18 channels down to 2.8 channels without loss of predictive power.</div>
+                            <div class="flex items-center space-x-4 pt-2 text-slate-500 font-mono">
+                                <span>Role: <strong class="text-indigo-600" id="sensor-role">Acute Detection & Spike Micro-Morphology</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Interactive SHAP Variance Chart -->
+                <div class="lg:col-span-6">
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-full">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="text-base font-bold text-slate-900">Predictive Variance Attribution (SHAP Analysis)</h3>
+                                    <p class="text-xs text-slate-500">Contribution to 30-min to 4-hour advance seizure forecasting</p>
+                                </div>
+                                <span class="px-2.5 py-1 rounded bg-teal-100 text-teal-800 text-xs font-bold">25 Patients / 40M Samples</span>
+                            </div>
+                            <!-- Chart Container -->
+                            <div class="chart-container">
+                                <canvas id="varianceChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200 text-xs text-amber-900 leading-relaxed">
+                            <strong class="font-bold">Key Analytical Finding:</strong> While scalp EEG dominates acute <em>ictal detection</em> (98.5% accuracy), <strong>contextual big data telemetry (70%)</strong>—sleep staging, medication logs, physical exertion, and stress—dominates <em>long-horizon 30m-4h prediction</em>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CHRONOBIOLOGY & MULTIDAY PHASE-LOCKING -->
+        <section id="chronobiology" class="scroll-mt-20">
+            <!-- Section Intro Paragraph -->
+            <div class="mb-6 p-4 rounded-xl bg-indigo-50/80 border border-indigo-100 text-slate-700 text-sm leading-relaxed">
+                <strong class="text-indigo-900 font-semibold">Section Overview:</strong> Continuous longitudinal monitoring reveals that seizures are tightly bound to endogenous physiological rhythms. This section allows users to inspect circadian (~24h) and multiday (~7d, ~14d, ~28d) phase-locking phenomena, calculate resultant circular phase vector (R-values), and evaluate the six-tier hierarchy of physiological signals for seizure risk discrimination.
+            </div>
+
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-8">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-900">Big Data Chronobiology & Multiday Phase Locking</h3>
+                        <p class="text-xs sm:text-sm text-slate-500">Wavelet phase extraction and circular resultant vector (R-value) quantification across 232-day patient recordings</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-mono bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg border border-slate-200">Hilbert Transform: z(t) = x_{bp}(t) + j \mathcal{H}\{x_{bp}(t)\}</span>
+                    </div>
+                </div>
+
+                <!-- Interactive R-Value Phase Calculator & Visualization -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                    <div class="md:col-span-5 space-y-4">
+                        <h4 class="font-bold text-slate-900 text-sm">Circular Resultant Vector Strength (R-value)</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Phase locking measures the clustering of seizure onsets at specific preferred phases \phi_k of a physiological cycle. An R-value close to 1.0 indicates tight phase synchronization, whereas R to 0 indicates random timing.
+                        </p>
+                        
+                        <!-- Interactive Slider for Cycle Phase Coherence -->
+                        <div class="space-y-2 bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <div class="flex justify-between text-xs font-semibold">
+                                <span class="text-slate-700">Simulated Phase Coherence (R):</span>
+                                <span id="r-value-display" class="text-indigo-600 font-mono text-sm font-bold">0.78</span>
+                            </div>
+                            <input type="range" id="r-slider" min="0.10" max="0.95" step="0.01" value="0.78" oninput="updateRValue(this.value)" class="w-full accent-indigo-600 cursor-pointer">
+                            <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                                <span>0.10 (Random Poisson)</span>
+                                <span>0.50 (Moderate)</span>
+                                <span>0.95 (Tight Phase Lock)</span>
+                            </div>
+                        </div>
+
+                        <div id="r-interpretation" class="p-3 text-xs rounded-lg bg-indigo-50 text-indigo-900 border border-indigo-200">
+                            <strong>High Phase Coherence (R = 0.78):</strong> Seizures strongly cluster at the peak of the multiday autonomic cycle. Risk scoring multiplies acute EEG probability by 1.85\times during peak phase window.
+                        </div>
+                    </div>
+
+                    <!-- Tiered Signal Hierarchy Cards -->
+                    <div class="md:col-span-7">
+                        <h4 class="font-bold text-slate-900 text-sm mb-3">Six-Tier Physiological Signal Discrimination Hierarchy</h4>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            <div class="p-3 rounded-lg border border-indigo-200 bg-indigo-50/50">
+                                <div class="text-[10px] font-bold text-indigo-600 uppercase">Tier 1 • Gold Standard</div>
+                                <div class="font-extrabold text-slate-900 text-xs mt-1">IEA Potentials</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">Intracranial Electrographic Activity</div>
+                            </div>
+                            <div class="p-3 rounded-lg border border-emerald-200 bg-emerald-50/50">
+                                <div class="text-[10px] font-bold text-emerald-600 uppercase">Tier 2 • Primary Autonomic</div>
+                                <div class="font-extrabold text-slate-900 text-xs mt-1">Residual HR</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">Circadian-adjusted resting heart rate</div>
+                            </div>
+                            <div class="p-3 rounded-lg border border-teal-200 bg-teal-50/50">
+                                <div class="text-[10px] font-bold text-teal-600 uppercase">Tier 3 • Thermal Shift</div>
+                                <div class="font-extrabold text-slate-900 text-xs mt-1">Skin Temp (TEMP)</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">Peripheral vasoconstriction cycles</div>
+                            </div>
+                            <div class="p-3 rounded-lg border border-slate-200 bg-slate-50">
+                                <div class="text-[10px] font-bold text-slate-500 uppercase">Tier 4 • Sudomotor</div>
+                                <div class="font-extrabold text-slate-900 text-xs mt-1">HR & Phasic EDA</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">Sympathetic arousal bursts</div>
+                            </div>
+                            <div class="p-3 rounded-lg border border-slate-200 bg-slate-50">
+                                <div class="text-[10px] font-bold text-slate-500 uppercase">Tier 5 • Actigraphy</div>
+                                <div class="font-extrabold text-slate-900 text-xs mt-1">3-Axis ACC</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">Motor restlessness & posture</div>
+                            </div>
+                            <div class="p-3 rounded-lg border border-slate-200 bg-slate-50">
+                                <div class="text-[10px] font-bold text-slate-500 uppercase">Tier 6 • Autonomic Baseline</div>
+                                <div class="font-extrabold text-slate-900 text-xs mt-1">Tonic EDA & HRV</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">Slow-varying sudomotor baseline</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: DEEP LEARNING & SPIKING NEUROMORPHIC MATHEMATICS ENGINE -->
+        <section id="neuromorphic" class="scroll-mt-20">
+            <!-- Section Intro Paragraph -->
+            <div class="mb-6 p-4 rounded-xl bg-indigo-50/80 border border-indigo-100 text-slate-700 text-sm leading-relaxed">
+                <strong class="text-indigo-900 font-semibold">Section Overview:</strong> This section details the mathematical formulations powering both high-capacity cloud models (Hybrid 2D-CNN + Transformers) and edge neuromorphic models (Spiking ConvLSTM / SPCLU). Users can interactively test Leaky Integrate-and-Fire (LIF) membrane dynamics, review fast-sigmoid surrogate gradients, and explore the AURA on-device continuous learning workflow.
+            </div>
+
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-8">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-900">Spiking Neural Network (SPCLU) & LIF Dynamics</h3>
+                        <p class="text-xs sm:text-sm text-slate-500">Event-driven neuromorphic membrane updates discretized via forward Euler (\Delta t = 16ms, \beta \approx 0.45)</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="toggleMathMode('snn')" id="tab-snn-btn" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white shadow-sm">SNN / LIF Dynamics</button>
+                        <button onclick="toggleMathMode('hybrid')" id="tab-hybrid-btn" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200">Hybrid CNN-LSTM / XAI</button>
+                    </div>
+                </div>
+
+                <!-- SNN Math Mode -->
+                <div id="math-snn-container" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    <!-- Equations Column -->
+                    <div class="lg:col-span-6 space-y-4">
+                        <div class="p-4 rounded-lg bg-slate-950 text-slate-100 font-mono text-xs space-y-3 leading-relaxed shadow-inner">
+                            <div class="text-indigo-400 font-bold border-b border-slate-800 pb-1">// LIF Membrane Potential Update</div>
+                            <div>u[t] = &beta; * u[t-1] + W * x[t-1] - z[t-1] * u_thr</div>
+                            
+                            <div class="text-teal-400 font-bold border-b border-slate-800 pb-1 pt-2">// Heaviside Spike Generation</div>
+                            <div>z[t] = &Theta;(u[t] - u_thr) = 1 if u[t] &ge; u_thr else 0</div>
+                            
+                            <div class="text-amber-400 font-bold border-b border-slate-800 pb-1 pt-2">// Fast-Sigmoid Surrogate Gradient (BPTT)</div>
+                            <div>&partial;S / &partial;V &approx; 1 / (1 + &beta;_sg * |V[t] - u_thr|)&sup2;</div>
+
+                            <div class="text-rose-400 font-bold border-b border-slate-800 pb-1 pt-2">// L2 Firing-Rate Sparsity Penalty</div>
+                            <div>L_total = L_CE + &lambda; * &sum; (&frac12; &sum; z[t] - r_target)&sup2;</div>
+                        </div>
+
+                        <div class="p-4 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-600 leading-relaxed">
+                            <strong class="text-slate-900 font-semibold">Surrogate Gradient Learning:</strong> Because the true derivative of the Heaviside step function is zero everywhere (except at threshold where it is infinite), standard backpropagation fails. Substituting the fast-sigmoid surrogate during backward passes enables end-to-end AdamW optimization while maintaining binary event-driven spike execution during forward passes.
+                        </div>
+                    </div>
+
+                    <!-- Interactive Membrane Dynamics Simulator -->
+                    <div class="lg:col-span-6 bg-slate-50 p-6 rounded-xl border border-slate-200 space-y-4">
+                        <h4 class="font-bold text-slate-900 text-sm">Interactive LIF Neuron Simulator</h4>
+                        <p class="text-xs text-slate-500">Inject synaptic current pulses to observe sub-threshold integration, threshold reset, and refractory dynamics.</p>
+                        
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-xs font-semibold">
+                                <span>Synaptic Input Weight (W \cdot x):</span>
+                                <span id="weight-val" class="font-mono text-indigo-600 font-bold">12.5 mV</span>
+                            </div>
+                            <input type="range" id="input-weight-slider" min="5" max="25" step="0.5" value="12.5" oninput="simLIF()" class="w-full accent-indigo-600">
+
+                            <div class="flex justify-between text-xs font-semibold pt-2">
+                                <span>Membrane Firing Threshold (u_{\text{thr}}):</span>
+                                <span id="thr-val" class="font-mono text-teal-600 font-bold">20.0 mV</span>
+                            </div>
+                            <input type="range" id="thr-slider" min="10" max="30" step="1" value="20" oninput="simLIF()" class="w-full accent-teal-600">
+                        </div>
+
+                        <!-- Mini Canvas Graph for Membrane Voltage -->
+                        <div class="bg-white p-3 rounded-lg border border-slate-200">
+                            <div class="text-[10px] font-mono text-slate-400 mb-1">MEMBRANE POTENTIAL u(t) vs TIMESTEPS (dt=16ms)</div>
+                            <div class="chart-container" style="height: 180px;">
+                                <canvas id="lifChart"></canvas>
+                            </div>
+                        </div>
+                        <div id="lif-spike-count" class="text-xs font-mono font-bold text-center text-indigo-700 bg-indigo-50 py-1.5 rounded">
+                            Spikes Emitted: 3 | Average Firing Rate: 9.38 Hz (Target: 10 Hz)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hybrid CNN-LSTM Mode (Hidden by Default) -->
+                <div id="math-hybrid-container" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    <div class="lg:col-span-6 space-y-4">
+                        <div class="p-4 rounded-lg bg-slate-900 text-slate-100 font-mono text-xs space-y-3 leading-relaxed">
+                            <div class="text-indigo-400 font-bold">// 2D Spectral Power Density Formulations</div>
+                            <div>P_abs(i) = log( &sum; PSD(&omega;) )  for &omega; in Band_i</div>
+                            <div>P_rel(i) = log( &sum; PSD(&omega;_i) / &sum; PSD(&omega;_total) )</div>
+                            <div>R_ij = P_abs(i) - P_abs(j)   (28 Pairwise Combinations)</div>
+
+                            <div class="text-teal-400 font-bold pt-2">// Multi-Head Scaled Dot-Product Attention</div>
+                            <div>Attention(Q, K, V) = softmax( (Q * K^T) / &radic;d_k ) * V</div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-6 p-6 rounded-xl bg-slate-50 border border-slate-200 space-y-3 text-xs text-slate-600">
+                        <h4 class="font-bold text-slate-900 text-sm">AURA On-Device Continuous Personalization Loop</h4>
+                        <p class="leading-relaxed">
+                            Because preictal signatures vary between individuals, EpiPredict incorporates the <strong>AURA (Adaptive Unlabeled Real-time Approximate-learning)</strong> framework. When an embedded high-specificity detector identifies an active seizure onset, it retroactively labels the buffered preictal window and fine-tunes the plastic output layer on-chip using a single recorded seizure.
+                        </p>
+                        <div class="p-3 bg-white rounded-lg border border-slate-200 font-mono text-[11px] text-slate-700">
+                            <strong>Feedback Calibration Gain:</strong> Reduces false alarm rate by 15% - 20% over 30 days without raw data cloud transmission.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: TINYML, EDGE HARDWARE & NEUROMORPHIC BENCHMARKS -->
+        <section id="hardware" class="scroll-mt-20">
+            <!-- Section Intro Paragraph -->
+            <div class="mb-6 p-4 rounded-xl bg-indigo-50/80 border border-indigo-100 text-slate-700 text-sm leading-relaxed">
+                <strong class="text-indigo-900 font-semibold">Section Overview:</strong> Deploying deep neural networks onto wearable microcontrollers requires bridging a four-order-of-magnitude gap in compute and thermal budgets. This section presents empirical hardware benchmarks comparing multi-core RISC-V processors (GAP9), mixed-signal neuromorphic silicon (DYNAP-SE2), ARM Cortex microcontrollers, and edge gateways (Jetson Nano).
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <!-- Interactive Hardware Chart -->
+                <div class="lg:col-span-7 bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-base font-bold text-slate-900">Hardware Execution Benchmarks</h3>
+                                <p class="text-xs text-slate-500">Inference Latency (ms) vs. Energy per Inference (mJ)</p>
+                            </div>
+                            <span class="px-2.5 py-1 rounded bg-indigo-100 text-indigo-800 text-xs font-bold font-mono">INT8 & SNN Acceleration</span>
+                        </div>
+                        <!-- Chart Container -->
+                        <div class="chart-container">
+                            <canvas id="hardwareChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs text-slate-600">
+                        <strong class="text-slate-900 font-semibold">Silicon Winner:</strong> GAP9 RISC-V cluster executes INT8 EPIDENET in <strong>2.84 ms</strong> consuming <strong>0.051 mJ</strong> at 17.89 mW—delivering a <strong>160&times; energy efficiency gain (40.61 GMAC/s/W)</strong> over ARM Cortex-M4.
+                    </div>
+                </div>
+
+                <!-- Hardware Benchmark Table (Table 4 from paper) -->
+                <div class="lg:col-span-5 bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="text-base font-bold text-slate-900">Table 4: Edge Hardware Matrix</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                                    <th class="p-2">Processor</th>
+                                    <th class="p-2">Power</th>
+                                    <th class="p-2">Latency</th>
+                                    <th class="p-2">Energy</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 font-mono text-[11px] text-slate-600">
+                                <tr class="bg-indigo-50/50 font-bold text-indigo-900">
+                                    <td class="p-2">GAP9 RISC-V</td>
+                                    <td class="p-2">17.89 mW</td>
+                                    <td class="p-2">2.84 ms</td>
+                                    <td class="p-2">0.051 mJ</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2">DYNAP-SE2 SNN</td>
+                                    <td class="p-2">&lt; 1.0 mW</td>
+                                    <td class="p-2">&lt; 10.0 ms</td>
+                                    <td class="p-2">2400&times; lower</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2">Tiny KAN MCU</td>
+                                    <td class="p-2">&lt; 20.0 mW</td>
+                                    <td class="p-2">4.60 ms</td>
+                                    <td class="p-2">&lt; 0.10 mJ</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2">Cortex-M4F</td>
+                                    <td class="p-2">50-150 mW</td>
+                                    <td class="p-2">100-405 ms</td>
+                                    <td class="p-2">0.15-8.09 mJ</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2">Jetson Nano</td>
+                                    <td class="p-2">1.5-5.0 W</td>
+                                    <td class="p-2">2.18 ms</td>
+                                    <td class="p-2">3.3-10 mJ</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="p-3 bg-indigo-50 rounded-lg text-xs text-indigo-950 leading-relaxed border border-indigo-100">
+                        <strong>Dual-Mode Selective Telemetry:</strong> Normal interictal data is discarded after local inference. High-resolution cloud streaming is activated only when k-of-n risk scores cross the warning threshold.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: CLINICAL PERFORMANCE & SPH/SOP OPTIMIZATION -->
+        <section id="clinical" class="scroll-mt-20">
+            <!-- Section Intro Paragraph -->
+            <div class="mb-6 p-4 rounded-xl bg-indigo-50/80 border border-indigo-100 text-slate-700 text-sm leading-relaxed">
+                <strong class="text-indigo-900 font-semibold">Section Overview:</strong> Evaluating seizure prediction requires rigorous event-level temporal definitions. This section allows users to dynamically simulate the neuro-ergonomic trade-off between the <strong>Seizure Prediction Horizon (SPH)</strong> and <strong>Seizure Occurrence Period (SOP)</strong>, and provides a filterable benchmark comparison table across five foundational big data repositories.
+            </div>
+
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-8">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-900">Clinical Evaluation Protocol & SPH/SOP Optimization</h3>
+                        <p class="text-xs sm:text-sm text-slate-500">Rigorous non-overlapping event-level testing (t_{\text{alarm}} + \text{SPH} \le t_{\text{onset}} \le t_{\text{alarm}} + \text{SPH} + \text{SOP})</p>
+                    </div>
+                    <span class="text-xs font-bold px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-800">
+                        Mathematically Optimal: SPH = 7 min | SOP = 27 min
+                    </span>
+                </div>
+
+                <!-- Interactive SPH / SOP Simulator -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    <div class="lg:col-span-5 space-y-4">
+                        <h4 class="font-bold text-slate-900 text-sm">SPH / SOP Trade-Off Simulator</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Adjust the Seizure Occurrence Period (SOP) slider to see how window length impacts Event Sensitivity vs. False Prediction Rate per Hour (FPR/h).
+                        </p>
+
+                        <div class="space-y-3 bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <div class="flex justify-between text-xs font-semibold">
+                                <span>Seizure Occurrence Period (SOP):</span>
+                                <span id="sop-val-display" class="font-mono text-indigo-600 font-bold">27 Minutes</span>
+                            </div>
+                            <input type="range" id="sop-slider" min="10" max="45" step="1" value="27" oninput="updateSOP(this.value)" class="w-full accent-indigo-600 cursor-pointer">
+                            <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                                <span>10 min (Narrow SOP)</span>
+                                <span>27 min (Optimum)</span>
+                                <span>45 min (Wide SOP)</span>
+                            </div>
+                        </div>
+
+                        <div id="sop-metrics-card" class="p-3 rounded-lg bg-indigo-50 border border-indigo-200 text-xs space-y-1">
+                            <div class="font-bold text-indigo-950">Simulated Clinical Metrics at SOP = 27 min:</div>
+                            <div class="flex justify-between text-slate-700">
+                                <span>Event-Level Sensitivity:</span>
+                                <strong class="text-emerald-700 font-mono" id="sim-sens">94.5%</strong>
+                            </div>
+                            <div class="flex justify-between text-slate-700">
+                                <span>False Prediction Rate:</span>
+                                <strong class="text-indigo-700 font-mono" id="sim-fpr">0.045 FPR/h</strong>
+                            </div>
+                            <div class="flex justify-between text-slate-700">
+                                <span>Patient Anxiety Index:</span>
+                                <strong class="text-amber-700 font-mono" id="sim-anxiety">Low / Optimal</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic SOP Curve Chart -->
+                    <div class="lg:col-span-7">
+                        <div class="chart-container">
+                            <canvas id="sopChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table 3: Filterable Benchmark Comparison Matrix -->
+                <div class="pt-6 border-t border-slate-200">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base">Table 3: Comprehensive Benchmark Dataset Comparison Matrix</h4>
+                            <p class="text-xs text-slate-500">Filter results across algorithm families and datasets</p>
+                        </div>
+                        <input type="text" id="table-search" oninput="filterBenchmarkTable()" placeholder="Search model or dataset..." class="px-3 py-1.5 rounded-lg border border-slate-300 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none w-full sm:w-64">
+                    </div>
+
+                    <div class="overflow-x-auto rounded-lg border border-slate-200">
+                        <table id="benchmark-table" class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                                    <th class="p-3">Model Architecture & Study</th>
+                                    <th class="p-3">Dataset & Modality</th>
+                                    <th class="p-3">SPH / SOP</th>
+                                    <th class="p-3">Sensitivity</th>
+                                    <th class="p-3">FPR / Hour</th>
+                                    <th class="p-3">Accuracy / AUC</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 text-slate-600 font-mono text-[11px]">
+                                <tr class="bg-indigo-50/40 font-bold text-slate-900">
+                                    <td class="p-3 font-sans">Foundational EpiPredict Target (Samuelson G)</td>
+                                    <td class="p-3 font-sans">Multimodal Wearables</td>
+                                    <td class="p-3">Real-time</td>
+                                    <td class="p-3 text-emerald-700">&ge; 70.0%</td>
+                                    <td class="p-3">Minimized</td>
+                                    <td class="p-3">&ge; 70.0% Target</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-sans">Spatio-Temporal Hybrid DL</td>
+                                    <td class="p-3 font-sans">CHB-MIT / Siena EEG</td>
+                                    <td class="p-3">5m / 30m</td>
+                                    <td class="p-3 text-emerald-700 font-bold">98.52% - 99.31%</td>
+                                    <td class="p-3 text-indigo-700 font-bold">0.010 - 0.045 /h</td>
+                                    <td class="p-3">99.54% AUC</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-sans">Temporal CNN + LSTM</td>
+                                    <td class="p-3 font-sans">CHB-MIT Scalp EEG</td>
+                                    <td class="p-3">3m / 30m</td>
+                                    <td class="p-3 text-emerald-700">97.75% - 98.21%</td>
+                                    <td class="p-3">0.237 /h</td>
+                                    <td class="p-3">98.10% Acc</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-sans">Neuromorphic Spiking-CNN</td>
+                                    <td class="p-3 font-sans">CHB-MIT (Spike-Encoded)</td>
+                                    <td class="p-3">Standard</td>
+                                    <td class="p-3 text-emerald-700">95.10%</td>
+                                    <td class="p-3">0.080 /h</td>
+                                    <td class="p-3">99.20% Spec</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-sans">Compact Multi-Head Attention</td>
+                                    <td class="p-3 font-sans">CHB-MIT Scalp EEG</td>
+                                    <td class="p-3">20m / 30m</td>
+                                    <td class="p-3 text-emerald-700">94.10% - 94.78%</td>
+                                    <td class="p-3">0.050 /h</td>
+                                    <td class="p-3">95.80% Acc</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-sans">Transformer-Guided CNN</td>
+                                    <td class="p-3 font-sans">CHB-MIT (18-Ch STFT)</td>
+                                    <td class="p-3">Standard</td>
+                                    <td class="p-3 text-emerald-700">91.50% - 92.11%</td>
+                                    <td class="p-3">0.145 /h</td>
+                                    <td class="p-3">93.50% AUC</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-sans">Patient-Specific Ensemble</td>
+                                    <td class="p-3 font-sans">EPILEPSIAE Database</td>
+                                    <td class="p-3">5m / 30m</td>
+                                    <td class="p-3 text-emerald-700">89.31%</td>
+                                    <td class="p-3">0.030 /h</td>
+                                    <td class="p-3">High Stability</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-sans">Two-Stage Set Transformer</td>
+                                    <td class="p-3 font-sans">CHB-MIT (2.8 Channels)</td>
+                                    <td class="p-3">3m / 30m</td>
+                                    <td class="p-3 text-emerald-700">80.10% Mean</td>
+                                    <td class="p-3">0.110 /h</td>
+                                    <td class="p-3">84.4% Channel Pruning</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-sans">Multimodal XGBoost + LSTM</td>
+                                    <td class="p-3 font-sans">25-Patient Multi-Sensor</td>
+                                    <td class="p-3">30m - 4h</td>
+                                    <td class="p-3 text-emerald-700">83.0% Pred / 98.5% Det</td>
+                                    <td class="p-3">-15% to -20% Loop</td>
+                                    <td class="p-3">99.0% Spec</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-sans">Bimodal EEG + fNIRS LSTM</td>
+                                    <td class="p-3 font-sans">Neuro-Hemodynamic</td>
+                                    <td class="p-3">Preictal</td>
+                                    <td class="p-3 text-emerald-700">&gt; 98.00%</td>
+                                    <td class="p-3">Minimal</td>
+                                    <td class="p-3">98.30% Acc</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 7: TRANSLATIONAL ROADMAP, ETHICAL GOVERNANCE, DECLARATIONS & REFERENCES -->
+        <section id="declarations" class="scroll-mt-20">
+            <!-- Section Intro Paragraph -->
+            <div class="mb-6 p-4 rounded-xl bg-indigo-50/80 border border-indigo-100 text-slate-700 text-sm leading-relaxed">
+                <strong class="text-indigo-900 font-semibold">Section Overview:</strong> This final section outlines the four-phase development roadmap, details ethical governance and patient biometric privacy protections, records mandatory author declarations for **SAMUELSON G**, and provides a searchable bibliography of peer-reviewed references.
+            </div>
+
+            <div class="space-y-8">
+                <!-- Phased Roadmap Timeline Cards -->
+                <div class="bg-white p-6 sm:p-8 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="text-xl font-bold text-slate-900 mb-6">Four-Phase Clinical & Engineering Roadmap</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="p-4 rounded-lg bg-slate-50 border border-slate-200 relative">
+                            <span class="text-xs font-mono font-bold text-indigo-600 uppercase">Phase 1 • Complete</span>
+                            <h4 class="font-bold text-slate-900 text-sm mt-1">Algorithm & SNN Design</h4>
+                            <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+                                Finalize hybrid 2D-CNN/Transformer backbone and surrogate-gradient Spiking ConvLSTM on CHB-MIT, Siena, and EPILEPSIAE benchmarks.
+                            </p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-indigo-50/50 border border-indigo-200 relative">
+                            <span class="text-xs font-mono font-bold text-indigo-600 uppercase">Phase 2 • Current</span>
+                            <h4 class="font-bold text-slate-900 text-sm mt-1">Dataset Expansion</h4>
+                            <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+                                Multi-center collection of 3-channel dry EEG/fNIRS headbands & wrist telemetry across diverse demographic cohorts.
+                            </p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-slate-50 border border-slate-200 relative">
+                            <span class="text-xs font-mono font-bold text-slate-500 uppercase">Phase 3 • Planned</span>
+                            <h4 class="font-bold text-slate-900 text-sm mt-1">EMU Collaborations</h4>
+                            <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+                                Deploy GAP9 and STM32 hardware prototypes alongside gold-standard inpatient video-EEG & implanted RNS units.
+                            </p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-slate-50 border border-slate-200 relative">
+                            <span class="text-xs font-mono font-bold text-slate-500 uppercase">Phase 4 • Future</span>
+                            <h4 class="font-bold text-slate-900 text-sm mt-1">Closed-Loop Translation</h4>
+                            <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+                                Federated learning, homomorphic encryption, and prospective randomized clinical trials for FDA SaMD clearance.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Governance & Author Declarations Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                        <h4 class="font-bold text-slate-900 text-sm flex items-center space-x-2">
+                            <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
+                            <span>Ethical Governance & Biometric Privacy</span>
+                        </h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Continuous neuro-surveillance requires strict biometric protections. EpiPredict processes continuous EEG/autonomic streams directly on-device via TinyML edge engines, preserving edge data sovereignty. When cloud synchronization is required for clinician review, data are secured via homomorphic encryption and differential privacy.
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                        <h4 class="font-bold text-slate-900 text-sm flex items-center space-x-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                            <span>Author Declarations & Institutional Compliance</span>
+                        </h4>
+                        <div class="text-xs text-slate-600 space-y-1.5 leading-relaxed">
+                            <div><strong>Author Attribution:</strong> <strong>SAMUELSON G</strong> conceived the platform architecture, formulated the analytics workflow, and authored this specification.</div>
+                            <div><strong>Ethics Approval:</strong> Benchmarked on de-identified IRB-approved repositories (CHB-MIT, Siena, EPILEPSIAE, TUSZ) under the Declaration of Helsinki.</div>
+                            <div><strong>Competing Interests:</strong> The author declares no competing financial interests.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Searchable Publication Bibliography -->
+                <div class="bg-white p-6 sm:p-8 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-base">Publication References & Literature Citations</h3>
+                            <p class="text-xs text-slate-500">Peer-reviewed sources supporting the EpiPredict framework</p>
+                        </div>
+                        <input type="text" id="ref-search" oninput="filterReferences()" placeholder="Search references..." class="px-3 py-1.5 rounded-lg border border-slate-300 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none w-full sm:w-64">
+                    </div>
+
+                    <ol id="references-list" class="space-y-2.5 text-xs text-slate-600 list-decimal list-inside font-sans">
+                        <li class="p-2 rounded hover:bg-slate-50 transition"><strong>Samuelson, G.</strong> <em>EpiPredict: Advanced Neurological Predictive Analytics Platform</em>. Technical Specification & Neuroengineering Report, 2026.</li>
+                        <li class="p-2 rounded hover:bg-slate-50 transition">World Health Organization (WHO). <em>Epilepsy and Neurological Disorder Global Epidemiological Reports</em>. Geneva: WHO, 2024.</li>
+                        <li class="p-2 rounded hover:bg-slate-50 transition">Stirling, R. E., et al. "Long-timescale cyclical changes in wearable and brain recordings and seizure phase locking in epilepsy." <em>Epilepsia</em>, doi:10.1101/2022.07.10.22277412.</li>
+                        <li class="p-2 rounded hover:bg-slate-50 transition">Truong, N. D., et al. "Convolutional neural networks for seizure prediction using intracranial and scalp electroencephalogram." <em>Neural Networks</em>, vol. 105, 2018.</li>
+                        <li class="p-2 rounded hover:bg-slate-50 transition">Maiwald, T., et al. "Comparison of three nonlinear seizure prediction methods by means of the seizure prediction characteristic." <em>Physica D</em>, 2004.</li>
+                        <li class="p-2 rounded hover:bg-slate-50 transition">Alaei, H. K., et al. "Optimal Seizure Prediction Horizon (SPH) and Seizure Occurrence Period (SOP) duration analysis." <em>Biomedical Signal Processing</em>.</li>
+                        <li class="p-2 rounded hover:bg-slate-50 transition">Zambrana-Vinaroz, D., et al. "Wearable Epileptic Seizure Prediction System Using ECG, PPG and EEG Signals." <em>Sensors</em>, vol. 22, p. 9372, 2022.</li>
+                        <li class="p-2 rounded hover:bg-slate-50 transition">Meisel, C., et al. "Machine Learning from Wristband Sensor Data for Wearable, Noninvasive Seizure Forecasting." <em>Epilepsia</em>, vol. 61, 2020.</li>
+                        <li class="p-2 rounded hover:bg-slate-50 transition">Yang, Y., et al. "Neuromorphic deep spiking neural networks for seizure detection." <em>Neuromorphic Computing & Engineering</em>, vol. 3, 2023.</li>
+                        <li class="p-2 rounded hover:bg-slate-50 transition">Tian, C., et al. "A neuromorphic computing approach for epileptic seizure prediction using Spiking CNNs." <em>Frontiers in Neuroscience</em>, vol. 17, 2023.</li>
+                        <li class="p-2 rounded hover:bg-slate-50 transition">Herbozo Contreras, L. F., et al. "Towards Personalized Edge-AI for Medicine: Efficient Neuromorphic Frameworks for Seizure Forecasting (AURA Platform)." <em>medRxiv</em>, 2025.</li>
+                        <li class="p-2 rounded hover:bg-slate-50 transition">Sipal, I., et al. "Multimodal fNIRS and EEG Fusion for Epileptic Seizure Prediction Using CNN, LSTM, and Transformers." <em>arXiv:2601.05095</em>, 2026.</li>
+                        <li class="p-2 rounded hover:bg-slate-50 transition">ETH Zurich / GreenWaves GAP9 Group. "Energy-Efficient Quantized Seizure Detection (EPIDENET) on Multi-Core RISC-V." <em>ETH Research Collection</em>, 2024.</li>
+                        <li class="p-2 rounded hover:bg-slate-50 transition">BioCAS Neuromorphic Group. "Event Driven Neural Network on a Mixed Signal Neuromorphic Processor (DYNAP-SE2) for EEG." <em>IEEE BioCAS</em>, 2024.</li>
+                        <li class="p-2 rounded hover:bg-slate-50 transition">Set Transformer Group. "Two-Stage Channel-Aware Set Transformer Network for Wearable Seizure Prediction on CHB-MIT." <em>arXiv:2507.15364</em>, 2025.</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-8 border-t border-slate-800 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p class="font-bold text-slate-200">EpiPredict: Advanced Neurological Predictive Analytics Platform</p>
+            <p>Authored by <strong>SAMUELSON G</strong> | Neuroengineering & Biomedical AI Research</p>
+            <p class="text-slate-500 text-[11px]">Single-Page Interactive Publication Console • Formatted for Academic Exploration</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Smooth scrolling helper
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Sensor detail inspector data
+        const sensorData = {
+            'eeg': {
+                title: 'Sparse Scalp EEG (2.8 Channels)',
+                desc: 'Captures cortical electrophysiological potentials at 256 Hz. Reduced from 18 channels to 2.8 channels using a two-stage channel-aware Set Transformer while retaining 80.1% sensitivity.',
+                role: 'Acute Cortical Burst & Gamma Dynamics'
+            },
+            'fnirs': {
+                title: 'Functional Near-Infrared Spectroscopy (fNIRS)',
+                desc: 'Optical optodes embedded in headband measure preictal surges in oxyhemoglobin (HbO2) and deoxyhemoglobin (HbR) driven by neurovascular coupling prior to GTCS discharges.',
+                role: 'Local Neuro-Hemodynamic Coupling'
+            },
+            'ecg': {
+                title: 'ECG & Wrist Optical PPG',
+                desc: 'Monitors beat-to-beat heart rate, residual heart rate, pulse wave transit time, and time/frequency HRV metrics reflecting preictal autonomic vagal withdrawal and sympathetic dominance.',
+                role: 'Cardiac Autonomic Shift Detection'
+            },
+            'eda': {
+                title: 'Electrodermal Activity (EDA)',
+                desc: 'Measures skin conductance decomposed into slow tonic SCL and rapid phasic SCR bursts reflecting sympathetic sudomotor arousal prior to clinical onset.',
+                role: 'Sympathetic Sudomotor Arousal'
+            },
+            'acc': {
+                title: '3-Axis Motion Accelerometry (ACC)',
+                desc: 'Tracks subtle myoclonic tremors, motor restlessness, and posture while providing motion reference vectors for adaptive noise cancellation in optical PPG and scalp EEG.',
+                role: 'Motion Artifact Reference & Tremor Analysis'
+            },
+            'context': {
+                title: 'Contextual Big Data Telemetry',
+                desc: 'Continuous tracking of sleep architecture staging, medication non-adherence, physical over-exertion, and self-reported/inferred stress. Drives 70% of 30min-4h predictive variance.',
+                role: 'Long-Horizon Multi-Hour Forecasting Dominance'
+            }
+        };
+
+        function selectSensor(key) {
+            document.querySelectorAll('.sensor-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-50', 'text-indigo-700', 'border-indigo-200');
+                btn.classList.add('bg-slate-50', 'text-slate-700', 'border-slate-200');
+            });
+            const activeBtn = document.getElementById(`btn-${key}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-slate-50', 'text-slate-700', 'border-slate-200');
+                activeBtn.classList.add('bg-indigo-50', 'text-indigo-700', 'border-indigo-200');
+            }
+            const info = sensorData[key];
+            if (info) {
+                document.getElementById('sensor-title').innerText = info.title;
+                document.getElementById('sensor-desc').innerText = info.desc;
+                document.getElementById('sensor-role').innerText = info.role;
+            }
+        }
+
+        // Helper for Chart.js label wrapping (16-char limit)
+        function wrapLabel(str) {
+            if (str.length <= 16) return str;
+            const words = str.split(' ');
+            let lines = [];
+            let currentLine = words[0];
+            for (let i = 1; i < words.length; i++) {
+                if ((currentLine + " " + words[i]).length <= 16) {
+                    currentLine += " " + words[i];
+                } else {
+                    lines.push(currentLine);
+                    currentLine = words[i];
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        }
+
+        // Initialize Chart 1: SHAP Variance Attribution Chart
+        let varianceChart;
+        function initVarianceChart() {
+            const ctx = document.getElementById('varianceChart').getContext('2d');
+            varianceChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: [
+                        wrapLabel('Contextual Telemetry (Sleep/Meds/Stress)'),
+                        wrapLabel('Autonomic Biosensors (HR/HRV/EDA)'),
+                        wrapLabel('Cranial EEG & fNIRS Potentials')
+                    ],
+                    datasets: [{
+                        data: [70, 20, 10],
+                        backgroundColor: ['#4F46E5', '#0D9488', '#6366F1'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { size: 11, family: 'Inter' },
+                                boxWidth: 12
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.label}: ${context.raw}% Variance`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // R-Value Phase Calculator Helper
+        function updateRValue(val) {
+            document.getElementById('r-value-display').innerText = parseFloat(val).toFixed(2);
+            const box = document.getElementById('r-interpretation');
+            if (val > 0.70) {
+                box.className = "p-3 text-xs rounded-lg bg-indigo-50 text-indigo-900 border border-indigo-200";
+                box.innerHTML = `<strong>High Phase Coherence (R = ${val}):</strong> Seizures strongly cluster at peak multiday autonomic phase. Risk score multiplied by ${(1 + parseFloat(val)).toFixed(2)}&times;.`;
+            } else if (val > 0.40) {
+                box.className = "p-3 text-xs rounded-lg bg-teal-50 text-teal-900 border border-teal-200";
+                box.innerHTML = `<strong>Moderate Phase Coherence (R = ${val}):</strong> Partial phase alignment. Autonomic prior provides moderate risk elevation.`;
+            } else {
+                box.className = "p-3 text-xs rounded-lg bg-slate-100 text-slate-800 border border-slate-300";
+                box.innerHTML = `<strong>Low Phase Coherence (R = ${val}):</strong> Diffuse distribution across physiological cycles. Model relies primarily on short-horizon EEG.`;
+            }
+        }
+
+        // Math Mode Toggle
+        function toggleMathMode(mode) {
+            const snnContainer = document.getElementById('math-snn-container');
+            const hybridContainer = document.getElementById('math-hybrid-container');
+            const btnSnn = document.getElementById('tab-snn-btn');
+            const btnHybrid = document.getElementById('tab-hybrid-btn');
+
+            if (mode === 'snn') {
+                snnContainer.classList.remove('hidden');
+                hybridContainer.classList.add('hidden');
+                btnSnn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white shadow-sm";
+                btnHybrid.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200";
+            } else {
+                snnContainer.classList.add('hidden');
+                hybridContainer.classList.remove('hidden');
+                btnHybrid.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white shadow-sm";
+                btnSnn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200";
+            }
+        }
+
+        // LIF Neuron Simulator Logic & Chart
+        let lifChart;
+        function simLIF() {
+            const inputW = parseFloat(document.getElementById('input-weight-slider').value);
+            const uThr = parseFloat(document.getElementById('thr-slider').value);
+            document.getElementById('weight-val').innerText = `${inputW.toFixed(1)} mV`;
+            document.getElementById('thr-val').innerText = `${uThr.toFixed(1)} mV`;
+
+            const beta = 0.45;
+            let u = 0;
+            let time = [];
+            let voltages = [];
+            let spikes = 0;
+
+            for (let t = 0; t < 20; t++) {
+                time.push(`t${t}`);
+                let input = (t % 3 === 0 || t % 7 === 0) ? inputW : 0;
+                u = beta * u + input;
+                if (u >= uThr) {
+                    spikes++;
+                    voltages.push(uThr + 5);
+                    u = 0; // Hard reset
+                } else {
+                    voltages.push(u);
+                }
+            }
+
+            const firingRate = (spikes / (20 * 0.016)).toFixed(2);
+            document.getElementById('lif-spike-count').innerText = `Spikes Emitted: ${spikes} | Average Firing Rate: ${firingRate} Hz (Target: 10 Hz)`;
+
+            if (lifChart) {
+                lifChart.data.labels = time;
+                lifChart.data.datasets[0].data = voltages;
+                lifChart.update();
+            } else {
+                const ctx = document.getElementById('lifChart').getContext('2d');
+                lifChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: time,
+                        datasets: [{
+                            label: 'u(t) Membrane Potential (mV)',
+                            data: voltages,
+                            borderColor: '#4F46E5',
+                            backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                            fill: true,
+                            tension: 0.2,
+                            pointRadius: 3,
+                            pointBackgroundColor: '#4F46E5'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { min: 0, max: Math.max(uThr + 10, 35), title: { display: true, text: 'mV', font: { size: 10 } } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Initialize Hardware Benchmark Chart
+        let hardwareChart;
+        function initHardwareChart() {
+            const ctx = document.getElementById('hardwareChart').getContext('2d');
+            hardwareChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [
+                        wrapLabel('GAP9 RISC-V Cluster'),
+                        wrapLabel('DYNAP-SE2 SNN Chip'),
+                        wrapLabel('Tiny KAN 32-Bit MCU'),
+                        wrapLabel('ARM Cortex-M4F MCU'),
+                        wrapLabel('NVIDIA Jetson Nano')
+                    ],
+                    datasets: [
+                        {
+                            label: 'Inference Latency (ms)',
+                            data: [2.84, 9.50, 4.60, 250.0, 2.18],
+                            backgroundColor: '#4F46E5'
+                        },
+                        {
+                            label: 'Energy per Inference (mJ)',
+                            data: [0.051, 0.002, 0.090, 4.12, 6.65],
+                            backgroundColor: '#0D9488'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 11 } } }
+                    },
+                    scales: {
+                        y: { type: 'logarithmic', title: { display: true, text: 'Log Scale (ms / mJ)' } }
+                    }
+                }
+            });
+        }
+
+        // SPH / SOP Slider Simulator Logic & Chart
+        let sopChart;
+        function updateSOP(val) {
+            document.getElementById('sop-val-display').innerText = `${val} Minutes`;
+            
+            // Mathematical curve simulation
+            const sop = parseFloat(val);
+            const sens = Math.min(99.3, 75 + (sop * 0.72)).toFixed(1);
+            const fpr = (0.15 - (sop * 0.0035)).toFixed(3);
+            
+            document.getElementById('sim-sens').innerText = `${sens}%`;
+            document.getElementById('sim-fpr').innerText = `${Math.max(0.01, fpr)} FPR/h`;
+            
+            if (sop < 18) {
+                document.getElementById('sim-anxiety').innerText = "Very Low (Too Short Warning)";
+                document.getElementById('sim-anxiety').className = "text-rose-600 font-mono font-bold";
+            } else if (sop <= 32) {
+                document.getElementById('sim-anxiety').innerText = "Low / Globally Optimal";
+                document.getElementById('sim-anxiety').className = "text-emerald-600 font-mono font-bold";
+            } else {
+                document.getElementById('sim-anxiety').innerText = "High (Extended Anticipatory Stress)";
+                document.getElementById('sim-anxiety').className = "text-amber-600 font-mono font-bold";
+            }
+
+            if (sopChart) {
+                // Update highlight point
+                sopChart.data.datasets[0].data = [
+                    { x: 10, y: 82.2 },
+                    { x: 20, y: 89.4 },
+                    { x: sop, y: parseFloat(sens) },
+                    { x: 40, y: 98.1 }
+                ];
+                sopChart.update();
+            }
+        }
+
+        function initSOPChart() {
+            const ctx = document.getElementById('sopChart').getContext('2d');
+            sopChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [10, 15, 20, 27, 35, 45],
+                    datasets: [
+                        {
+                            label: 'Event Sensitivity (%)',
+                            data: [82.2, 85.8, 89.4, 94.5, 97.2, 99.1],
+                            borderColor: '#10B981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'False Prediction Rate (FPR/h)',
+                            data: [0.12, 0.09, 0.07, 0.045, 0.03, 0.015],
+                            borderColor: '#F43F5E',
+                            borderDash: [5, 5],
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 11 } } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) {
+                                    return ` ${ctx.dataset.label}: ${ctx.raw} at SOP ${ctx.label}m`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'Seizure Occurrence Period SOP (Minutes)' } },
+                        y: { title: { display: true, text: 'Metric Value' } }
+                    }
+                }
+            });
+        }
+
+        // Table Filtering Functions
+        function filterBenchmarkTable() {
+            const query = document.getElementById('table-search').value.toLowerCase();
+            const rows = document.querySelectorAll('#benchmark-table tbody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        function filterReferences() {
+            const query = document.getElementById('ref-search').value.toLowerCase();
+            const items = document.querySelectorAll('#references-list li');
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                item.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        // Window Load Handler
+        window.addEventListener('DOMContentLoaded', () => {
+            initVarianceChart();
+            simLIF();
+            initHardwareChart();
+            initSOPChart();
+        });
+    </script>
+</body>
+</html>
